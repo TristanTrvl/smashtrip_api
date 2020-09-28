@@ -23,6 +23,9 @@ default: &default
 
 development:
   <<: *default
+  host: localhost
+  username: admin
+  password: N)V'6f@LtH@Q
   database: smashtrip_api_development
 
   # The specified database role being used to connect to postgres.
