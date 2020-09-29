@@ -3,7 +3,7 @@
 one:
   email: MyString
   username: MyString
-  password: MyString
+  password_digest: MyString
   firstname: MyString
   name: MyString
   tel: MyString
@@ -13,7 +13,7 @@ one:
 two:
   email: MyString
   username: MyString
-  password: MyString
+  password_digest: MyString
   firstname: MyString
   name: MyString
   tel: MyString
