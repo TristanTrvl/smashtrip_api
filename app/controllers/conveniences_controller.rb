@@ -42,7 +42,7 @@ class ConveniencesController < ApplicationController
   def find_convenience
     @convenience = Convenience.find_by_id!(params[:_id])
     rescue ActiveRecord::RecordNotFound
-      render json: { errors: 'User not found' }, status: :not_found
+      render json: { errors: 'Convenience not found' }, status: :not_found
   end
 
   def convenience_params
