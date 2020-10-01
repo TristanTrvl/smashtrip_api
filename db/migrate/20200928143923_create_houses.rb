@@ -3,7 +3,7 @@ class CreateHouses < ActiveRecord::Migration[6.0]
     create_table :houses do |t|
       t.string :address
       t.integer :nb_slots
-      t.references :user, null: false, foreign_key: true
+      t.belongs_to :user, null: false, foreign_key: true
 
       t.timestamps
     end
