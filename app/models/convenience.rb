@@ -1,0 +1,2 @@
+class Convenience < ApplicationRecord
+end
