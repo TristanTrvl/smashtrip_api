@@ -2,7 +2,7 @@ class CreateHouses < ActiveRecord::Migration[6.0]
   def change
     create_table :houses do |t|
       t.string :address
-      t.integer :nb_slots
+      t.integer :nb_slots, null: false
       t.belongs_to :user, null: false, foreign_key: true
 
       t.timestamps
