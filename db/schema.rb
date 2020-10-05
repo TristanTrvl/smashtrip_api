@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_01_100921) do
+ActiveRecord::Schema.define(version: 2020_10_01_113723) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,6 +39,18 @@ ActiveRecord::Schema.define(version: 2020_10_01_100921) do
     t.index ["house_id"], name: "index_houses_has_conveniences_on_house_id"
   end
 
+  create_table "housing_adverts", force: :cascade do |t|
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.integer "event_id"
+    t.integer "price"
+    t.text "desc"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_housing_adverts_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email"
     t.string "username"
@@ -55,4 +67,5 @@ ActiveRecord::Schema.define(version: 2020_10_01_100921) do
   add_foreign_key "houses", "users"
   add_foreign_key "houses_has_conveniences", "conveniences"
   add_foreign_key "houses_has_conveniences", "houses"
+  add_foreign_key "housing_adverts", "users"
 end
