@@ -46,11 +46,11 @@ class HousingAdvertsController < ApplicationController
   private
   
   def find_user
-    User.find_by_id!(params[:user__id])
+    User.find_by_id!(params[:user_id])
   end
 
   def find_housing_advert
-    @housing_advert = find_user.housing_advert.find_by_id!(params[:_id])
+    @housing_advert = find_user.housing_advert.find_by_id!(params[:user_id])
     rescue ActiveRecord::RecordNotFound
       render json: { errors: 'House not found' }, status: :not_found
   end
