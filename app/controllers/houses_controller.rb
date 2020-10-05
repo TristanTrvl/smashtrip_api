@@ -9,7 +9,7 @@ class HousesController < ApplicationController
 
   # POST /users/{id}/house
   def create
-    @user = User.find_by_id!(params[:user_id])
+    @user = find_user
     @house = @user.build_house(house_params)
     handle_house_conveniences
     if @house.save
@@ -36,8 +36,12 @@ class HousesController < ApplicationController
   end
 
   private
+    def find_user
+      User.find_by_id!(params[:user_id])
+    end
+
     def find_house
-      @house = User.find_by_id!(params[:user_id]).house
+      @house = find_user.house
       rescue ActiveRecord::RecordNotFound
         render json: { errors: 'House not found' }, status: :not_found
     end
