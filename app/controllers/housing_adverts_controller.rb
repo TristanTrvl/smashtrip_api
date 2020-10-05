@@ -2,15 +2,13 @@ class HousingAdvertsController < ApplicationController
   before_action :authorize_request, except: [:index_all, :index, :show]
   before_action :find_housing_advert, except: [:index_all, :index, :create]
 
-  # GET /housing_adverts
-  def index_all
-    @housing_adverts = HousingAdvert.all
-    render json: @housing_adverts, status: :ok
-  end
-
   # GET /user/{user_id}/housing_adverts
   def index
-    @housing_adverts = find_user.housing_advert.all
+    if params[:user_id]
+      @housing_adverts = find_user.housing_advert.all
+    else 
+      @housing_adverts = HousingAdvert.all
+    end
     render json: @housing_adverts, status: :ok
   end
   
@@ -50,7 +48,11 @@ class HousingAdvertsController < ApplicationController
   end
 
   def find_housing_advert
-    @housing_advert = find_user.housing_advert.find_by_id!(params[:user_id])
+    if params[:user_id]
+      @housing_advert = find_user.housing_advert.find_by_id!(params[:user_id])
+    else
+      @housing_advert = HousingAdvert.find_by_id!(params[:id])
+    end
     rescue ActiveRecord::RecordNotFound
       render json: { errors: 'House not found' }, status: :not_found
   end
