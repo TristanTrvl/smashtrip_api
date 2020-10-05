@@ -9,7 +9,7 @@ class HousesController < ApplicationController
 
   # POST /users/{id}/house
   def create
-    @user = User.find(params[:user_id])
+    @user = User.find_by_id!(params[:user_id])
     @house = @user.build_house(house_params)
     handle_house_conveniences
     if @house.save
