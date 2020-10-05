@@ -1,6 +1,6 @@
 class ConveniencesController < ApplicationController
-  before_action :authorize_request
-  before_action :find_convenience, except: %i[create index]
+  before_action :authorize_request, except: [:index,:show]
+  before_action :find_convenience, except: [:index, :create]
 
   # GET /conveniences
   def index
