@@ -1,19 +1,25 @@
 class HousingAdvertsController < ApplicationController
-  before_action :authorize_request, except: :create
-  before_action :find_housing_advert, except: %i[create index]
+  before_action :authorize_request, except: [:index_all, :index, :show]
+  before_action :find_housing_advert, except: [:index_all, :index, :create]
 
-  # GET /housing_advert
-  def index
+  # GET /housing_adverts
+  def index_all
     @housing_adverts = HousingAdvert.all
     render json: @housing_adverts, status: :ok
   end
 
-  # GET /user/{user_id}/housing_advert/{id}
-  def show
+  # GET /user/{user_id}/housing_adverts
+  def index
+    @housing_adverts = find_user.housing_advert.all
     render json: @housing_adverts, status: :ok
   end
+  
+  # GET /user/{user_id}/housing_adverts/{id}
+  def show
+    render json: @housing_advert, status: :ok
+  end
 
-  # POST /user/{user_id}/housing_advert
+  # POST /user/{user_id}/housing_adverts
   def create
     @housing_advert = HousingAdvert.new(housing_advert_params)
     if @housing_advert.save
@@ -24,7 +30,7 @@ class HousingAdvertsController < ApplicationController
     end
   end
 
-  # PUT /user/{user_id}/housing_advert/{id}
+  # PUT /user/{user_id}/housing_adverts/{id}
   def update
     unless @housing_advert.update(housing_advert_params)
       render json: { errors: @housing_advert.errors.full_messages },
@@ -32,17 +38,21 @@ class HousingAdvertsController < ApplicationController
     end
   end
 
-  # DELETE /user/{user_id}/housing_advert/{id}
+  # DELETE /user/{user_id}/housing_adverts/{id}
   def destroy
     @housing_advert.destroy
   end
 
   private
+  
+  def find_user
+    User.find_by_id!(params[:user__id])
+  end
 
   def find_housing_advert
-    @housing_advert = HousingAdvert.find_by_id!(params[:_id])
+    @housing_advert = find_user.housing_advert.find_by_id!(params[:_id])
     rescue ActiveRecord::RecordNotFound
-      render json: { errors: 'User not found' }, status: :not_found
+      render json: { errors: 'House not found' }, status: :not_found
   end
 
   def housing_advert_params
