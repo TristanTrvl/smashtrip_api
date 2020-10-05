@@ -1,8 +1,8 @@
 class HousingAdvertsController < ApplicationController
-  before_action :authorize_request, except: [:index_all, :index, :show]
-  before_action :find_housing_advert, except: [:index_all, :index, :create]
+  before_action :authorize_request, except: [:index, :show]
+  before_action :find_housing_advert, except: [:index, :create]
 
-  # GET /user/{user_id}/housing_adverts
+  # GET /housing_adverts OR /user/{user_id}/housing_adverts
   def index
     if params[:user_id]
       @housing_adverts = find_user.housing_advert.all
@@ -12,7 +12,7 @@ class HousingAdvertsController < ApplicationController
     render json: @housing_adverts, status: :ok
   end
   
-  # GET /user/{user_id}/housing_adverts/{id}
+  # GET /housing_adverts/{id} OR /user/{user_id}/housing_adverts/{id}
   def show
     render json: @housing_advert, status: :ok
   end
@@ -49,7 +49,7 @@ class HousingAdvertsController < ApplicationController
 
   def find_housing_advert
     if params[:user_id]
-      @housing_advert = find_user.housing_advert.find_by_id!(params[:user_id])
+      @housing_advert = find_user.housing_advert.find_by_id!(params[:id])
     else
       @housing_advert = HousingAdvert.find_by_id!(params[:id])
     end
