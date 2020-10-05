@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  housing_advert: one
+  start_date: 2020-10-05 13:53:28
+  end_date: 2020-10-05 13:53:28
+  nb_persons: 1
+
+two:
+  user: two
+  housing_advert: two
+  start_date: 2020-10-05 13:53:28
+  end_date: 2020-10-05 13:53:28
+  nb_persons: 1
