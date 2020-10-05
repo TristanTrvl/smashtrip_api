@@ -10,20 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_01_113723) do
+ActiveRecord::Schema.define(version: 2020_10_05_115328) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "conveniences", force: :cascade do |t|
-    t.string "name"
+    t.string "name", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "houses", force: :cascade do |t|
     t.string "address"
-    t.integer "nb_slots"
+    t.integer "nb_slots", null: false
     t.bigint "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -40,9 +40,9 @@ ActiveRecord::Schema.define(version: 2020_10_01_113723) do
   end
 
   create_table "housing_adverts", force: :cascade do |t|
-    t.datetime "start_date"
-    t.datetime "end_date"
-    t.integer "event_id"
+    t.datetime "start_date", null: false
+    t.datetime "end_date", null: false
+    t.integer "event_id", null: false
     t.integer "price"
     t.text "desc"
     t.bigint "user_id", null: false
@@ -51,10 +51,23 @@ ActiveRecord::Schema.define(version: 2020_10_01_113723) do
     t.index ["user_id"], name: "index_housing_adverts_on_user_id"
   end
 
+  create_table "housing_reservations", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "housing_advert_id", null: false
+    t.datetime "start_date", null: false
+    t.datetime "end_date", null: false
+    t.integer "nb_persons", default: 1, null: false
+    t.string "status", default: "pending", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["housing_advert_id"], name: "index_housing_reservations_on_housing_advert_id"
+    t.index ["user_id"], name: "index_housing_reservations_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
-    t.string "email"
-    t.string "username"
-    t.string "password_digest"
+    t.string "email", null: false
+    t.string "username", null: false
+    t.string "password_digest", null: false
     t.string "firstname"
     t.string "name"
     t.string "tel"
@@ -68,4 +81,6 @@ ActiveRecord::Schema.define(version: 2020_10_01_113723) do
   add_foreign_key "houses_has_conveniences", "conveniences"
   add_foreign_key "houses_has_conveniences", "houses"
   add_foreign_key "housing_adverts", "users"
+  add_foreign_key "housing_reservations", "housing_adverts"
+  add_foreign_key "housing_reservations", "users"
 end
