@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  start_date: 2020-10-01 13:37:23
+  end_date: 2020-10-01 13:37:23
+  event_id: 1
+  price: 1
+  desc: MyText
+  user_id: one
+
+two:
+  start_date: 2020-10-01 13:37:23
+  end_date: 2020-10-01 13:37:23
+  event_id: 1
+  price: 1
+  desc: MyText
+  user_id: two
