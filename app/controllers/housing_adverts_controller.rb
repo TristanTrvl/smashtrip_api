@@ -1,60 +1,69 @@
 class HousingAdvertsController < ApplicationController
   before_action :authorize_request, except: [:index, :show]
-  before_action :find_housing_advert, except: [:index, :create]
 
   # GET /housing_adverts OR /user/{user_id}/housing_adverts
   def index
     if params[:user_id]
-      @housing_adverts = find_user.housing_advert.all
+      @housing_adverts = find_user_housing_adverts.all
     else 
       @housing_adverts = HousingAdvert.all
     end
-    render json: @housing_adverts, status: :ok
+    render json: @housing_adverts, :status => :ok
   end
   
   # GET /housing_adverts/{id} OR /user/{user_id}/housing_adverts/{id}
   def show
-    render json: @housing_advert, status: :ok
+    if params[:user_id]
+      @housing_advert = find_user_housing_adverts.find_by_id!(params[:id])
+    else
+      @housing_advert = find_housing_advert
+    end
+    render json: @housing_advert, :status => :ok
   end
 
-  # POST /user/{user_id}/housing_adverts
+  # POST /housing_adverts
   def create
     @housing_advert = HousingAdvert.new(housing_advert_params)
     if @housing_advert.save
-      render json: @housing_advert, status: :created
+      render json: @housing_advert, :status => :created
     else
       render json: { errors: @housing_advert.errors.full_messages },
-             status: :unprocessable_entity
+             :status => :unprocessable_entity
     end
   end
 
-  # PUT /user/{user_id}/housing_adverts/{id}
+  # PUT /housing_adverts/{id}
   def update
+    @housing_advert = find_housing_advert
     unless @housing_advert.update(housing_advert_params)
       render json: { errors: @housing_advert.errors.full_messages },
-             status: :unprocessable_entity
+             :status => :unprocessable_entity
     end
   end
 
-  # DELETE /user/{user_id}/housing_adverts/{id}
+  # DELETE /housing_adverts/{id}
   def destroy
-    @housing_advert.destroy
+    find_housing_advert.destroy
   end
 
   private
-  
+  #TODO extract find_user
   def find_user
     User.find_by_id!(params[:user_id])
+    rescue ActiveRecord::RecordNotFound
+      render json: { errors: 'User not found' }, :status => :not_found
+  end
+  
+  def find_user_housing_adverts
+    find_user.housing_advert
+    rescue ActiveRecord::RecordNotFound
+      render json: { errors: 'Housing adverts not found' }, :status => :not_found
   end
 
   def find_housing_advert
-    if params[:user_id]
-      @housing_advert = find_user.housing_advert.find_by_id!(params[:id])
-    else
-      @housing_advert = HousingAdvert.find_by_id!(params[:id])
-    end
+    HousingAdvert.find_by_id!(params[:id])
     rescue ActiveRecord::RecordNotFound
-      render json: { errors: 'House not found' }, status: :not_found
+      render json: { errors: 'Housing advert not found' }, :status => :not_found
   end
 
   def housing_advert_params
