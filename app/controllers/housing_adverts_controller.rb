@@ -1,5 +1,5 @@
 class HousingAdvertsController < ApplicationController
-  before_action :authorize_request, except: [:index, :show]
+  before_action :authorize_request, :except => [:index, :show]
 
   # GET /housing_adverts OR /user/{user_id}/housing_adverts
   def index
@@ -47,15 +47,8 @@ class HousingAdvertsController < ApplicationController
   end
 
   private
-  #TODO extract find_user
-  def find_user
-    User.find_by_id!(params[:user_id])
-    rescue ActiveRecord::RecordNotFound
-      render json: { errors: 'User not found' }, :status => :not_found
-  end
-  
   def find_user_housing_adverts
-    find_user.housing_advert
+    User.find_by_id!(params[:user_id]).housing_advert
     rescue ActiveRecord::RecordNotFound
       render json: { errors: 'Housing adverts not found' }, :status => :not_found
   end

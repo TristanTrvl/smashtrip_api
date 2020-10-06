@@ -1,53 +1,72 @@
 class HousingReservationsController < ApplicationController
-  before_action :authorize_request, except: [:index, :show]
-  before_action :find_housing_reservation, except: [:index, :create]
+  before_action :authorize_request, :except => [:index, :show]
 
   # GET /user/{user_id}/housing_reservations
   def index
-    @housing_reservations = find_user.housing_reservations.all
-    render json: @housing_reservations, status: :ok
+    if params[:user_id]
+      @housing_reservations = find_user_housing_reservations.all
+    elsif params[:housing_advert_id]
+      @housing_reservations = find_advert_housing_reservations.all
+    else
+      @housing_reservations = HousingReservation.all
+    end
+    render json: @housing_reservations, :status => :ok
   end
   
   # GET /user/{user_id}/housing_reservations/{id}
   def show
-    render json: @housing_reservation, status: :ok
+    if params[:user_id]
+      @housing_reservation = find_user_housing_reservations.find_by_id!(params[:id])
+    elsif params[:housing_advert_id]
+      @housing_reservation = find_advert_housing_reservations.find_by_id!(params[:id])
+    else
+      @housing_reservation = find_housing_reservation
+    end
+    render json: @housing_reservation, :status => :ok
   end
 
-  # POST /user/{user_id}/housing_reservations
+  # POST /housing_reservations
   def create
-    @housing_reservation = find_user.housing_reservations.build(housing_reservation_params)
+    @housing_reservation = HousingReservation.new(housing_reservation_params)
     if @housing_reservation.save
-      render json: @housing_reservation, status: :created
+      render json: @housing_reservation, :status => :created
     else
       render json: { errors: @housing_reservation.errors.full_messages },
-             status: :unprocessable_entity
+             :status => :unprocessable_entity
     end
   end
 
-  # PUT /user/{user_id}/housing_reservations/{id}
+  # PUT /housing_reservations/{id}
   def update
-    @housing_reservation.assign_attributes(housing_reservation_params)
-    unless @housing_reservation.save
+    @housing_reservation = find_housing_reservation
+    unless @housing_reservation.update(housing_reservation_params)
       render json: { errors: @housing_reservation.errors.full_messages },
-             status: :unprocessable_entity
+             :status => :unprocessable_entity
     end
   end
 
-  # DELETE /user/{user_id}/housing_reservations/{id}
+  # DELETE /housing_reservations/{id}
   def destroy
-    @housing_reservation.destroy
+    find_housing_reservation.destroy
   end
 
   private
-  
-  def find_user
-    User.find_by_id!(params[:user_id])
+  def find_user_housing_reservations
+    User.find_by_id!(params[:user_id]).housing_reservations
+    rescue ActiveRecord::RecordNotFound
+      render json: { errors: 'Housing adverts not found' }, :status => :not_found
+  end
+
+  def find_advert_housing_reservations
+    HousingAdvert.find_by_id!(params[:housing_advert_id]).housing_reservations
+    rescue ActiveRecord::RecordNotFound
+      render json: { errors: 'Housing adverts not found' }, :status => :not_found
   end
 
   def find_housing_reservation
-    @housing_reservation = find_user.housing_reservations.find_by_id!(params[:id])
+    HousingReservation.find_by_id!(params[:id])
     rescue ActiveRecord::RecordNotFound
-      render json: { errors: 'Reservation not found' }, status: :not_found
+      render json: { errors: 'Reservation not found' }, :status => :not_found
   end
 
   def housing_reservation_params
