@@ -1,53 +1,56 @@
 class HousesController < ApplicationController
   before_action :authorize_request
-  before_action :find_house, except: :create
- 
-  # GET /users/{id}/house
+   
+  # GET /users/{user_id}/house
   def show
-    render json: @house.to_json(:include => :conveniences), status: :ok
+    render json: find_house.to_json(:include => :conveniences), :status => :ok
   end
 
-  # POST /users/{id}/house
+  # POST /users/{user_id}/house
   def create
-    @user = find_user
-    @house = @user.build_house(house_params)
+    @house = find_user.build_house(house_params)
     handle_house_conveniences
     if @house.save
-      render json: @house, status: :created
+      render json: @house, :status => :created
     else
       render json: { errors: @house.errors.full_messages },
-            status: :unprocessable_entity
+            :status => :unprocessable_entity
     end
   end
 
-  # PUT /users/{id}/house
+  # PUT /users/{user_id}/house
   def update
+    @house = find_house
     @house.assign_attributes(house_params)
     handle_house_conveniences
     unless @house.save
       render json: { errors: @house.errors.full_messages },
-             status: :unprocessable_entity
+             :status => :unprocessable_entity
     end
   end
 
-  # DELETE /users/{id}/house
+  # DELETE /users/{user_id}/house
   def destroy
-    @house.destroy
+    find_house.destroy
   end
 
   private
+    #TODO extract find_user
     def find_user
       User.find_by_id!(params[:user_id])
+      rescue ActiveRecord::RecordNotFound
+        render json: { errors: 'User not found' }, :status => :not_found
     end
 
     def find_house
-      @house = find_user.house
+      find_user.house
       rescue ActiveRecord::RecordNotFound
-        render json: { errors: 'House not found' }, status: :not_found
+        render json: { errors: 'House not found' }, :status => :not_found
     end
     
     def handle_house_conveniences
       if params['conveniences_ids']
+        @house = find_house
         @house.conveniences.clear
         conveniences = params['conveniences_ids'].to_unsafe_h.map { |_, id| Convenience.find(id) }
         @house.conveniences << conveniences 
@@ -55,6 +58,6 @@ class HousesController < ApplicationController
     end
 
     def house_params
-      params.permit(:address, :nb_slots, :user_id)
+      params.permit(:address, :nb_slots)
     end
 end
